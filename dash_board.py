@@ -10,6 +10,7 @@ class Return_Period:
         self.district = district
         self.root.title("Return Rainfall Periods in Sri Lanka")
         self.root.geometry("1920x1000+0+0")
+        
 
         bg_image = Image.open("background.jpg")
         bg_image = bg_image.resize((1920, 1000), Image.LANCZOS)
@@ -35,33 +36,7 @@ class Return_Period:
             district_dropdown.config(font=("Helvetica", 18), width=60, bg="white", fg="black")
             district_dropdown.place(relx=0.5, rely=0.30, anchor="center")
 
-        # else:
-        #     label = Label(self.root, text=f"Rainfall Return Periods - {district.upper()}",
-        #                   font=("Algerian", 30, "bold"), bg="#FFFFFF", fg="#051626")
-        #     label.place(relx=0.5, rely=0.20, anchor="center")
-
-        #     self.choice_var = StringVar()
-        #     self.choice_var.set("Select Station")
-
-        #     specific_files = [
-        #         "CSV_ALUPOLA.csv", "CSV_CARNEY ESTATE.csv", "CSV_CHANDRIKAWEWA.csv", "CSV_DEPEDENA GROUP.csv",
-        #         "CSV_DETANAGALLA.csv", "CSV_EHELIYAGODA S.P..csv", "CSV_EMBILIPITIYA.csv", "CSV_GALATURA ESTATE.csv",
-        #         "CSV_GILIMALAY ESTATE.csv", "CSV_GODAKAWELA.csv", "CSV_HALLAYEN ESTATE.csv", "CSV_MUTWAGALLA ESTATE.csv",
-        #         "CSV_non pariel.csv", "CSV_RASSAGALA.csv"
-        #     ]
-
-        #     station_names = [file.replace(".csv", "").replace("_", " ").title() for file in specific_files]
-
-        #     if not station_names:
-        #         Label(self.root, text="No station CSV files found for this district.",
-        #               font=("Helvetica", 16), bg="#FFFFFF", fg="red").place(relx=0.5, rely=0.5, anchor="center")
-        #     else:
-        #         dropdown = OptionMenu(self.root, self.choice_var, *station_names)
-        #         dropdown.config(font=("Helvetica", 16), width=60, bg="white", fg="black")
-        #         dropdown.place(relx=0.5, rely=0.30, anchor="center")
-
         else:
-            # District selected — show analysis options
             label = Label(self.root, text=f"Rainfall Return Periods - {district.upper()}",
                           font=("Algerian", 30, "bold"), bg="#FFFFFF", fg="#051626")
             label.place(relx=0.5, rely=0.20, anchor="center")
@@ -90,27 +65,12 @@ class Return_Period:
                    bg="#301934", fg="white", padx=20, pady=10,
                    command=self.open_find_window).place(relx=0.05, rely=0.95, anchor="sw")
 
-    # def get_analysis_choices_for_district(self, district_name):
-    #     folder_path = os.path.join(os.getcwd(), district_name)
-    #     if not os.path.exists(folder_path):
-    #         print(f"Folder for district '{district_name}' not found.")
-    #         return {}
-
-    #     analysis_choices = {}
-    #     for filename in os.listdir(folder_path):
-    #         if filename.endswith(".py"):
-    #             display_name = filename.replace(".py", "").replace("_", " ").title()
-    #             analysis_choices[display_name] = os.path.join(folder_path, filename)
-
-    #     return analysis_choices
-
     def get_analysis_choices_for_district(self, district_name):
         folder_path = os.path.join(os.getcwd(), district_name)
         if not os.path.exists(folder_path):
             print(f"Folder for district '{district_name}' not found.")
             return {}
 
-        # ✅ Define allowed CSV files per district manually
         allowed_stations_by_district = {
             "Ratnapura": {
                 "Alupola": "alupola.py",
@@ -129,32 +89,23 @@ class Return_Period:
             "Badulla": {
                 "Badulla": "badulla.py",
                 "Bandarawela": "bandarawela.py"
-                # Add more as needed
             },
             "Colombo": {
                 "Colombo Central": "colombo.py",
                 "ratmalana": "ratmalana.py"
-                
-                # Add more as needed
             },
-            # 🔄 Add more districts and their allowed station files here
         }
 
-        # 📦 Get station list for the selected district
         station_dict = allowed_stations_by_district.get(district_name, {})
-
         analysis_choices = {}
 
         for station_name, filename in station_dict.items():
             full_path = os.path.join(folder_path, filename)
-            if os.path.exists(full_path):  # Only add if CSV file exists
+            if os.path.exists(full_path):
                 display_name = f"Analyze Station - {station_name}"
                 analysis_choices[display_name] = full_path
 
         return analysis_choices
-
-
-
 
     def open_script(self, choice, choices_dict):
         script_path = choices_dict.get(choice)
@@ -179,9 +130,6 @@ class Return_Period:
         root.mainloop()
 
     def open_find_window(self):
-        #pass  # unchanged for brevity
-
-        
         find_window = Toplevel(self.root)
         find_window.title("Find Rainfall by Station")
         find_window.geometry("1920x1000+0+0")
@@ -195,23 +143,17 @@ class Return_Period:
         bg_label.place(x=0, y=0, relwidth=1, relheight=1)
 
         try:
-           # df = pd.read_csv("Combined_Rainfall_All_Stations_ratnapura.csv" )
-           # Read both CSV files
             df_ratnapura = pd.read_csv("Combined_Rainfall_All_Stations_ratnapura.csv")
             df_colombo = pd.read_csv("Combined_Rainfall_All_Stations_colombo.csv")
             df_badulla = pd.read_csv("Combined_Rainfall_All_Stations_badulla.csv")
 
-            # Combine them into one DataFrame
             df = pd.concat([df_ratnapura, df_colombo, df_badulla], ignore_index=True)
-            #print(df_combined.head())
             df.columns = df.columns.str.strip()
             df = df.rename(columns={"station_name": "Station", "obs": "Rainfall_mm", "Date": "Date"})
 
             stations = df['Station'].unique().tolist()
 
             Label(find_window, text="FIND RAINFALL DATA BY STATION", font=("Helvetica", 24, "bold"), bg="#FFFFFF").pack(pady=20)
-
-            
 
             Label(find_window, text="Select Station:", font=("Helvetica", 16), bg="#FFFFFF").pack(pady=10)
             station_var = StringVar()
@@ -260,46 +202,38 @@ class Return_Period:
         except Exception as e:
             print(f"Error running {script_path}: {e}")
 
-
     def add_generic_buttons(self, district):
         base_path = os.path.join(district, district.lower())
-        #base_path = os.path.join(district, f"{district}")
 
+        button_config = {
+            "font": ("Helvetica", 14, "bold"),
+            "bg": "#DFC5FE",
+            "fg": "black",
+            "padx": 20,
+            "pady": 10,
+            "width": 40,
+            "height": 2
+        }
 
-        Button(
-            self.root,
-            text="Plot Seasonal Return Period - Monthly Areal Data",
-            font=("Helvetica", 14, "bold"), bg="#DFC5FE", fg="black", padx=20, pady=10,
-            command=lambda: self.run_script(f"{base_path}_seasonal.py")
-        ).place(relx=0.5, rely=0.40, anchor="center")
+        Button(self.root, text="Plot Seasonal Return Period - Monthly Areal Data",
+               command=lambda: self.run_script(f"{base_path}_seasonal.py"), **button_config
+               ).place(relx=0.5, rely=0.40, anchor="center")
 
-        Button(
-            self.root,
-            text="Plot Seasonal Return Period - Daily Data",
-            font=("Helvetica", 14, "bold"), bg="#DFC5FE", fg="black", padx=20, pady=10,
-            command=lambda: self.run_script(f"{base_path}_season_daily.py")
-        ).place(relx=0.5, rely=0.50, anchor="center")
+        Button(self.root, text="Plot Seasonal Return Period - Daily Data",
+               command=lambda: self.run_script(f"{base_path}_season_daily.py"), **button_config
+               ).place(relx=0.5, rely=0.50, anchor="center")
 
-        Button(
-            self.root,
-            text="District Graph - Monthly Areal",
-            font=("Helvetica", 14, "bold"), bg="#DFC5FE", fg="black", padx=20, pady=10,
-            command=lambda: self.run_script(f"{base_path}_district.py")
-        ).place(relx=0.5, rely=0.60, anchor="center")
+        Button(self.root, text="District Graph - Monthly Areal",
+               command=lambda: self.run_script(f"{base_path}_district.py"), **button_config
+               ).place(relx=0.5, rely=0.60, anchor="center")
 
-        Button(
-            self.root,
-            text="District Graph - Daily",
-            font=("Helvetica", 14, "bold"), bg="#DFC5FE", fg="black", padx=20, pady=10,
-            command=lambda: self.run_script(f"{base_path}_district_withdailyrainfall.py")
-        ).place(relx=0.5, rely=0.70, anchor="center")
+        Button(self.root, text="District Graph - Daily",
+               command=lambda: self.run_script(f"{base_path}_district_withdailyrainfall.py"), **button_config
+               ).place(relx=0.5, rely=0.70, anchor="center")
 
-        Button(
-            self.root,
-            text="All Station Return Rainfall",
-            font=("Helvetica", 14, "bold"), bg="#DFC5FE", fg="black", padx=10, pady=5,
-            command=lambda: self.run_script(f"{base_path}_all_in_one.py")
-        ).place(relx=0.5, rely=0.80, anchor="center")
+        Button(self.root, text="All Station Return Rainfall",
+               command=lambda: self.run_script(f"{base_path}_all_in_one.py"), **button_config
+               ).place(relx=0.5, rely=0.80, anchor="center")
 
 if __name__ == "__main__":
     root = Tk()
