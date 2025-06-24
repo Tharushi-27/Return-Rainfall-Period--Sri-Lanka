@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Load CSV
-file_path = 'C:/Users/DELL/Desktop/all district/CSV_Extreme_Rainfall_By_Day_colombo.csv'
+file_path = 'C:/Users/DELL/Desktop/all district/CSV_Extreme_Rainfall_By_Day_ratnapura.csv'
 df = pd.read_csv(file_path)
 
 # Convert 'Date' to datetime
@@ -36,7 +36,7 @@ extreme_days_count = df_last30.groupby('Year').size().reset_index(name='Extreme_
 plt.figure(figsize=(12, 6))
 plt.bar(extreme_days_count['Year'], extreme_days_count['Extreme_Days'], color='#c084fc')  # light purple
 
-plt.title('Number of Extreme Rainfall Days during SW Monsoon (Last 30 Years) - colombo')
+plt.title('Number of Extreme Rainfall Days during SW Monsoon (Last 30 Years) - Ratnapura')
 plt.xlabel('Year')
 plt.ylabel('Number of Extreme Rainfall Days')
 plt.grid(axis='y')

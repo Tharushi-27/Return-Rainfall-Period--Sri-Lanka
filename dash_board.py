@@ -10,7 +10,6 @@ class Return_Period:
         self.district = district
         self.root.title("Return Rainfall Periods in Sri Lanka")
         self.root.geometry("1920x1000+0+0")
-        
 
         bg_image = Image.open("background.jpg")
         bg_image = bg_image.resize((1920, 1000), Image.LANCZOS)
@@ -113,6 +112,7 @@ class Return_Period:
             try:
                 script_folder = os.path.dirname(script_path)
                 script_name = os.path.basename(script_path)
+                print(f"Opening script: {script_path}")
                 subprocess.Popen(["python", script_name], cwd=script_folder)
             except Exception as e:
                 print(f"Error running {script_path}: {e}")
@@ -198,12 +198,26 @@ class Return_Period:
             full_path = os.path.abspath(script_path)
             script_folder = os.path.dirname(full_path)
             script_name = os.path.basename(full_path)
-            subprocess.Popen(["python", script_name], cwd=script_folder)
+            print(f"Attempting to run script:\n  Full Path: {full_path}\n  Script Name: {script_name}\n  Working Dir: {script_folder}")
+            # Run and capture output/errors
+            result = subprocess.run(
+                ["python", script_name],
+                cwd=script_folder,
+                capture_output=True,
+                text=True
+            )
+            print("Script Output:\n", result.stdout)
+            if result.stderr:
+                print("Script Errors:\n", result.stderr)
+            if result.returncode != 0:
+                print(f"Script exited with code {result.returncode}")
         except Exception as e:
-            print(f"Error running {script_path}: {e}")
+            print(f"Error running script {script_path}: {e}")
 
     def add_generic_buttons(self, district):
         base_path = os.path.join(district, district.lower())
+        print(f"Adding generic buttons for district: {district}")
+        print(f"Base path for scripts: {base_path}")
 
         button_config = {
             "font": ("Helvetica", 14, "bold"),
@@ -212,7 +226,7 @@ class Return_Period:
             "padx": 20,
             "pady": 10,
             "width": 40,
-            "height": 2
+            "height": 1
         }
 
         Button(self.root, text="Plot Seasonal Return Period - Monthly Areal Data",
@@ -234,6 +248,10 @@ class Return_Period:
         Button(self.root, text="All Station Return Rainfall",
                command=lambda: self.run_script(f"{base_path}_all_in_one.py"), **button_config
                ).place(relx=0.5, rely=0.80, anchor="center")
+
+        Button(self.root, text="SW Monsoon Graph",
+               command=lambda: self.run_script(f"{base_path}_extreme.py"), **button_config
+               ).place(relx=0.5, rely=0.90, anchor="center")
 
 if __name__ == "__main__":
     root = Tk()
